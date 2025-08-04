@@ -4,6 +4,6 @@ build/
 .venv
 __cache__/
 
-tmp.*
+.tmp.*
 *.swp
 *.egg-info
