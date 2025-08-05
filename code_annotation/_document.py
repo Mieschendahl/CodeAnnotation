@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Optional
 from easy_prompting import Prompter
 from easy_prompting.prebuilt import extract_code, If
-from code_annotation._comparison import is_safe
+from code_annotation._comparison import is_isomorphic
 
 def annotate_code(prompter: Prompter, code: str, delete: bool = False, types: bool = True, docs: bool = True, comments: bool = False, format: bool = False) -> str:
     new_code = prompter.get_copy()\
@@ -54,7 +54,7 @@ def annotate_file(prompter: Prompter, file_path: str | Path, delete: bool = Fals
     file_path = Path(file_path)
     code = file_path.read_text()
     new_code = annotate_code(prompter, code, delete, types, docs, comments, format)
-    prefix = "safe." if is_safe(code, new_code) else "unsafe."
+    prefix = "safe." if is_isomorphic(code, new_code) else "unsafe."
     typed_file_path = file_path.parent / (prefix + file_path.name)
     typed_file_path.write_text(new_code)
 

@@ -71,7 +71,7 @@ def normalize_ast(code: str) -> ast.AST:
     ast.fix_missing_locations(tree)
     return tree
 
-def is_safe(old_code: str, new_code: str) -> bool:
+def is_isomorphic(old_code: str, new_code: str) -> bool:
     try:
         tree1 = normalize_ast(old_code)
         tree2 = normalize_ast(new_code)

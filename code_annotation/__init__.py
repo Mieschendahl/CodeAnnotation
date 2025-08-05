@@ -3,4 +3,4 @@ from code_annotation._document import (
     annotate_directory,
     annotate_file
 )
-from code_annotation._comparison import is_safe, normalize_ast
+from code_annotation._comparison import is_isomorphic, normalize_ast
