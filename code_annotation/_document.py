@@ -1,7 +1,6 @@
 from pathlib import Path
 from typing import Optional
-from easy_prompting import Prompter
-from easy_prompting.prebuilt import extract_code, If
+from easy_prompting.prebuilt import extract_code, If, Prompter
 from code_annotation._comparison import is_isomorphic
 
 def annotate_code(prompter: Prompter, code: str, delete: bool = False, types: bool = True, docs: bool = True, comments: bool = False, format: bool = False) -> str:
