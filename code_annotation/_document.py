@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Optional
-from easy_prompting.prebuilt import extract_code, delimit, If, Prompter
+from easy_prompting.prebuilt import extract_code, delimit_code, If, Prompter
 from code_annotation._comparison import is_isomorphic
 
 def annotate_code(prompter: Prompter, code: str, delete: bool = False, types: bool = True, docs: bool = True, comments: bool = False, format: bool = False) -> str:
@@ -46,7 +46,7 @@ def annotate_code(prompter: Prompter, code: str, delete: bool = False, types: bo
             f"\n- Leave everything else exactly as it is, including any kind of mistake or bad code."
         )\
         .add_message(
-            f"Here is the code:\n{delimit(code, "python")}"
+            f"Here is the code:\n{delimit_code(code, "python")}"
         )\
         .get_completion()
     return extract_code(new_code)
