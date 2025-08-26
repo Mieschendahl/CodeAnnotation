@@ -3,6 +3,8 @@ from typing import Optional
 from easy_prompting.prebuilt import extract_code, delimit_code, If, Prompter, Message
 from code_annotation._comparison import is_isomorphic
 
+# TODO: explicitely handle __init__ case where implementations are hallucinated?
+
 def annotate_code(prompter: Prompter, code: str, delete: bool = False, types: bool = True, docs: bool = True, comments: bool = False, format: bool = False) -> str:
     new_code = prompter.get_copy()\
         .add_message(
