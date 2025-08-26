@@ -1,49 +1,53 @@
 from pathlib import Path
 from typing import Optional
-from easy_prompting.prebuilt import extract_code, delimit_code, If, Prompter
+from easy_prompting.prebuilt import extract_code, delimit_code, If, Prompter, Message
 from code_annotation._comparison import is_isomorphic
 
 def annotate_code(prompter: Prompter, code: str, delete: bool = False, types: bool = True, docs: bool = True, comments: bool = False, format: bool = False) -> str:
     new_code = prompter.get_copy()\
         .add_message(
-            f"Please apply the following modification to the following Python code:"
+            f"Please apply the following modification to the following python code"
             +
-            If(
-                types,
+            Message.create_list(
                 If(
-                    not delete,
-                    f"\n- Add type annotations whenever necessary.",
-                    f"\n- Remove type annotations whenever possible.",
-                )
-            )
-            +
-            If(
-                docs,
+                    types,
+                    If(
+                        not delete,
+                        f"Add type annotations whenever necessary.",
+                        f"Remove type annotations whenever possible.",
+                    ),
+                    None
+                ),
                 If(
-                    not delete,
-                    f"\n- Add google style doc-strings whenever necessary.",
-                    f"\n- Remove doc-strings whenever possible."
-                )
-            )
-            +
-            If(
-                comments,
+                    docs,
+                    If(
+                        not delete,
+                        f"Add google style doc-strings whenever necessary.",
+                        f"Remove doc-strings whenever possible."
+                    ),
+                    None
+                ),
                 If(
-                    not delete,
-                    f"\n- Add comments that explain the code whenever necessary.",
-                    f"\n- Remove comments whenever possible."
-                )
-            )
-            +
-            If(
-                format,
+                    comments,
+                    If(
+                        not delete,
+                        f"Add comments that explain the code whenever necessary.",
+                        f"Remove comments whenever possible."
+                    ),
+                    None
+                ),
                 If(
-                    not delete,
-                    f"\n- Improve the formatting of the code whenever necessary."
-                )
+                    format,
+                    If(
+                        not delete,
+                        f"Improve the formatting of the code whenever necessary.",
+                        None
+                    ),
+                    None
+                ),
+                f"Leave everything else exactly as it is, including any kind of mistake or bad code.",
+                scope = True
             )
-            +
-            f"\n- Leave everything else exactly as it is, including any kind of mistake or bad code."
         )\
         .add_message(
             f"Here is the code:\n{delimit_code(code, "python")}"
