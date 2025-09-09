@@ -1,9 +1,12 @@
 [project]
 name = "code_annotation"
 version = "1.0.0"
-description = "A python library for annotating and formatting Python code."
+description = "A Python library for annotating and formatting Python code."
 authors = [{name = "Leonardo Mieschendahl", email = "miesschendahl.leonardo@gmail.com"}]
-dependencies = ["easy_prompting @ git+https://github.com/TheoreticalCoder/EasyPrompting.git"]
+dependencies = [
+    "easy_prompting @ git+https://github.com/TheoreticalCoder/EasyPrompting.git",
+    "openai~=1.106.1"
+]
 
 [build-system]
 requires = ["setuptools", "wheel"]
