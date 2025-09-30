@@ -4,8 +4,8 @@ version = "1.0.0"
 description = "A Python library for annotating and formatting Python code."
 authors = [{name = "Leonardo Mieschendahl", email = "miesschendahl.leonardo@gmail.com"}]
 dependencies = [
-    "easy_prompting @ git+https://github.com/TheoreticalCoder/EasyPrompting.git",
-    "openai~=1.106.1"
+    "openai >= 1.106.0, < 2.0.0",
+    "easy_prompting @ git+https://github.com/TheoreticalCoder/EasyPrompting.git"
 ]
 
 [build-system]
@@ -13,4 +13,4 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-exclude = ["dev.*"]
+exclude = ["build", "dist", "dev.*"]

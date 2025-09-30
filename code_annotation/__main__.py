@@ -4,17 +4,17 @@ import sys
 from typing import Optional
 
 from easy_prompting import Prompter
-from easy_prompting.prebuilt import GPT, PrintLogger
+from easy_prompting.prebuilt import GPT, LogPrint
 
 from code_annotation import annotate_directory, replace_directory
 
 def run_annotation(path: str, recursive: bool, model_name: str, temperature: int, interactive: bool, cache_path: str,
                          types: bool, docs: bool, comments: bool, format: bool, delete: bool, instruction: Optional[str], include_artifacts: bool) -> None:
     prompter = Prompter(GPT(model=model_name, temperature=temperature))\
-        .set_loggers(PrintLogger(sys.stdout).set_max_lines(15))\
+        .set_tag("annotation")\
+        .set_logger(LogPrint().set_max_lines(15))\
         .set_cache_path(cache_path)\
-        .set_interaction("user" if interactive else None)
-
+        .set_interaction(interactive)
     annotate_directory(
         prompter=prompter,
         path=Path(path),
@@ -43,9 +43,8 @@ if __name__ == "__main__":
     )
     subparsers = parser.add_subparsers(dest="command", metavar="COMMAND", required=True)
 
-    # -----------------------------
     # annotate subcommand
-    # -----------------------------
+
     p_annotate = subparsers.add_parser(
         "annotate",
         help="Annotate a file or directory of code using an OpenAI model.",
@@ -119,9 +118,8 @@ if __name__ == "__main__":
         help="Whether files with the safe./unsafe. prefix should also be annotated"
     )
 
-    # -----------------------------
     # replace subcommand
-    # -----------------------------
+
     p_replace = subparsers.add_parser(
         "replace",
         help="Replace original code with annotated code (safe./unsafe. versions).",
@@ -143,9 +141,10 @@ if __name__ == "__main__":
         action="store_true",
         help="Does not replace originals with safe versions"
     )
-
+    
+    # run command
+    
     args = parser.parse_args()
-
     if args.command == "annotate":
         run_annotation(
             path=args.path,

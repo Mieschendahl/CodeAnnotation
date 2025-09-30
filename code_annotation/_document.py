@@ -1,11 +1,17 @@
 from pathlib import Path
 from typing import Optional
+from easy_prompting.prebuilt import Prompter, IList, IItem, IData, ICode, delimit_code, list_text
+
 from code_annotation._comparison import is_isomorphic
-from easy_prompting.prebuilt import Prompter, IList, IItem, IData, ICode, delimit_code, If, list_text
+
+def If(condition: bool, then_text: Optional[str] = None, else_text: Optional[str] = None) -> Optional[str]:
+    if condition:
+        return then_text
+    return else_text
 
 def annotate_code(prompter: Prompter, code: str, types: bool = True, docs: bool = True, comments: bool = False,
                   format: bool = False, delete: bool = False, instruction: Optional[str] = None, tag: Optional[str] = None) -> str:
-    [_, code_out] = prompter.get_copy()\
+    [thoughts, code_out] = prompter.get_copy()\
         .set_tag(tag)\
         .add_message(
             f"You are a Python expert. Follow the instructions of the user.",
@@ -28,7 +34,7 @@ def annotate_code(prompter: Prompter, code: str, types: bool = True, docs: bool 
                     docs,
                     If(
                         not delete,
-                        f"Add google style doc-strings whenever necessary",
+                        f"Add google style doc-strings whenever necessary (do not include type annotations in the doc-strings!)",
                         f"Remove doc-strings whenever possible"
                     ),
                     "Do not add or modify doc-strings"
@@ -45,14 +51,14 @@ def annotate_code(prompter: Prompter, code: str, types: bool = True, docs: bool 
                 If(
                     format,
                     If(
-                        not delete,
-                        f"Improve the formatting of the code whenever necessary",
-                        None
+                        delete,
+                        None,
+                        f"Improve the formatting of the code whenever necessary"
                     ),
                     f"Do not modify the formatting of the code"
                 ),
-                f"Leave everything else exactly as it is, including any kind of mistake or bad code.",
-                f"Do not add any kind of missing implementation or imports, they will be handled later.",
+                f"Leave everything else exactly as it is, including any kind of mistake or bad code",
+                f"Do not add any kind of missing implementation or imports, they will be handled later",
                 instruction,
                 add_scope=True
             )
@@ -74,10 +80,8 @@ def annotate_code(prompter: Prompter, code: str, types: bool = True, docs: bool 
 def annotate_file(prompter: Prompter, file_path: Path, types: bool = True, docs: bool = True,
                   comments: bool = False, format: bool = False, delete: bool = False, instruction: Optional[str] = None, include_artifacts: bool = False) -> None:
     assert file_path.exists(), f"The given path does not exists: \"{file_path.absolute()}\""
-
     if not include_artifacts and (file_path.name.startswith("safe.") or file_path.name.startswith("unsafe.")):
         return
-
     code = file_path.read_text()
     new_code = annotate_code(
         prompter=prompter,
@@ -97,7 +101,6 @@ def annotate_file(prompter: Prompter, file_path: Path, types: bool = True, docs:
 def annotate_directory(prompter: Prompter, path: Path, recursive: bool = False, types: bool = True, docs: bool = True, comments: bool = False,
                        format: bool = False, delete: bool = False, instruction: Optional[str] = None, depth: int = 0, include_artifacts: bool = False) -> None:
     assert path.exists(), f"The given path does not exists: \"{path.absolute()}\""
-
     path = Path(path)
     if path.is_file() and path.name.endswith(".py"):
         annotate_file(
@@ -130,13 +133,10 @@ def annotate_directory(prompter: Prompter, path: Path, recursive: bool = False, 
 
 def replace_file(file_path: Path, exclude_safe: bool = False, exclude_unsafe: bool = False) -> None:
     assert file_path.exists(), f"The given path does not exists: \"{file_path.absolute()}\""
-
     unsafe_file_path = file_path.parent / f"unsafe.{file_path.name}"
     if not exclude_unsafe and unsafe_file_path.is_file():
         file_path.write_text(unsafe_file_path.read_text())
         unsafe_file_path.unlink()
-
-    # this order ensures that safe is written last
     safe_file_path = file_path.parent / f"safe.{file_path.name}"
     if not exclude_safe and safe_file_path.is_file():
         file_path.write_text(safe_file_path.read_text())
@@ -144,7 +144,6 @@ def replace_file(file_path: Path, exclude_safe: bool = False, exclude_unsafe: bo
 
 def replace_directory(path: Path, recursive: bool = False, exclude_safe: bool = False, exclude_unsafe: bool = False, depth: int = 0) -> None:
     assert path.exists(), f"The given path does not exists: \"{path.absolute()}\""
-
     path = Path(path)
     if path.is_file() and path.name.endswith(".py"):
         replace_file(
