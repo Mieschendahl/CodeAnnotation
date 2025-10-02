@@ -5,7 +5,7 @@ description = "A Python library for annotating and formatting Python code."
 authors = [{name = "Leonardo Mieschendahl", email = "miesschendahl.leonardo@gmail.com"}]
 dependencies = [
     "openai >= 1.106.0, < 2.0.0",
-    "easy_prompting @ git+https://github.com/TheoreticalCoder/EasyPrompting.git"
+    "easy_prompting @ git+https://github.com/TheoreticalCoder/EasyPrompting.git@v1.0.0"
 ]
 
 [build-system]

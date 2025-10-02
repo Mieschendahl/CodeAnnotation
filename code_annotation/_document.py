@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Optional
-from easy_prompting.prebuilt import Prompter, IList, IItem, IData, ICode, delimit_code, list_text
 
+from easy_prompting.prebuilt import Prompter, IList, IItem, IData, ICode, delimit_code, list_text
 from code_annotation._comparison import is_isomorphic
 
 def If(condition: bool, then_text: Optional[str] = None, else_text: Optional[str] = None) -> Optional[str]:
