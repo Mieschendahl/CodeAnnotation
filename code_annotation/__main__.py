@@ -6,11 +6,18 @@ from easy_prompting import Prompter
 from easy_prompting.prebuilt import GPT, LogPrint, LogReadable
 from code_annotation import annotate_directory, replace_directory
 
+HORIZONTAL_LIMIT = 15
+VERTICAL_LIMIT = 100
+
 def run_annotation(path: str, recursive: bool, model_name: str, temperature: int, interactive: bool, cache_path: str,
                          types: bool, docs: bool, comments: bool, format: bool, delete: bool, instruction: Optional[str], include_artifacts: bool) -> None:
     prompter = Prompter(GPT(model=model_name, temperature=temperature))\
         .set_tag("annotation")\
-        .set_logger(LogReadable(LogPrint()).set_truncation(30))\
+        .set_logger(
+            LogReadable(LogPrint())\
+                .set_horizontal_crop(HORIZONTAL_LIMIT)\
+                .set_vertical_crop(VERTICAL_LIMIT)
+            )\
         .set_cache_path(cache_path)\
         .set_interaction(interactive)
     annotate_directory(
