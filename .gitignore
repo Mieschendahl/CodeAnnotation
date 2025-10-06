@@ -1,9 +1,9 @@
+__pycache__/
 .venv/
 build/
 dist/
-__pycache__/
-dev.*
+dev/
+completions/
+
 *.swp
 *.egg-info
-
-completions
